@@ -70,9 +70,16 @@
 
         if (available) {
           $('#' + id).addClass('available');
+        } 
+        else {
+          $('#' + id).addClass('unavailable');
         }
+        
         if (reservable) {
           $('#' + id).addClass('reservable');
+        }
+        else {
+          $('#' + id).addClass('not-reservable');
         }
 
         if (available && reservable) {
