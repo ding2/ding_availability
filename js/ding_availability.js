@@ -10,6 +10,26 @@
 
   Drupal.behaviors.dingAvailabilityAttach = {
     attach: function(context, settings) {
+      if($('.availability:not(.processed), .holdings:not(.processed)', context).size()) {
+        var $url = settings.basePath + settings.pathPrefix + 'ding_availability/holdings';
+        var element_settings = { 'url': $url, 'event': 'click', 'progress': { 'type': 'throbber' }, 'submit': {} };
+        
+        var $ids = {};
+        $('.availability:not(.processed)', context).addClass('processed').each(function() {
+          $ids[$(this).attr('id')] = settings.ding_availability[$(this).attr('id')][0];
+        });
+        element_settings.submit.availability = $ids;
+        $ids = {};
+        $('.holdings:not(.processed)', context).addClass('processed').each(function() {
+          $ids[$(this).attr('id')] = settings.ding_availability[$(this).attr('id')][0];
+        });
+        element_settings.submit.holdings = $ids;
+        
+        var base = $('.availability.processed:first');
+        Drupal.ajax[base.attr('id')] = new Drupal.ajax(base.attr('id'), base, element_settings);
+        base.click();
+      }
+      /*return;
       var ids = [];
       var html_ids = [];
       $.each(settings.ding_availability, function(id, entity_ids) {
@@ -76,17 +96,18 @@
         }
 
         if (available && reservable) {
-          $('#' + id).attr('title', Drupal.t('available'));
+          $('#' + id).attr('title', Drupal.t('Available'));
         }
         else if (!available && reservable) {
-          $('#' + id).attr('title', Drupal.t('on loan'));
+          $('#' + id).attr('title', Drupal.t('On loan'));
         }
         else if (available && ! reservable) {
-          $('#' + id).attr('title', Drupal.t('not reservable'));
+          $('#' + id).attr('title', Drupal.t('Not reservable'));
         }
         else if (!available && ! reservable) {
-          $('#' + id).attr('title', Drupal.t('unavailable'));
+          $('#' + id).attr('title', Drupal.t('Unavailable'));
         }
+        $('#' + id).text($('#' + id).attr('title'));
       }
 
       function updateHoldings(id, entity_ids) {
@@ -117,9 +138,8 @@
           }
         }
       }
-
+*/
     }
   };
 
 })(jQuery);
-

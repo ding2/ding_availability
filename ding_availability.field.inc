@@ -106,7 +106,7 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
         $element[$delta] = array(
           '#markup' => '<div id="' . $id . '" class="holdings holdings-' . $entity->localId . '"></div>',
           '#attached' => $attached,
-      );
+        );
       break;
       case 'ding_availability_item':
         $element[$delta] = array(
