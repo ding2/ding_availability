@@ -13,6 +13,19 @@
       if($('.availability:not(.processed), .holdings:not(.processed)', context).size()) {
         var $url = settings.basePath + settings.pathPrefix + 'ding_availability/holdings';
         var element_settings = { 'url': $url, 'event': 'click', 'progress': { 'type': 'throbber' }, 'submit': {} };
+        if($.browser.msie && ($.browser.version == '8.0' || $.browser.version == '7.0')) {
+          element_settings.success = function (response, status) {
+            for (var i in response) {
+              if(response[i].selector) {
+                $(response[i].selector)[response[i].method](response[i].data);
+                if(response[i].selector.indexOf('holdings-') != -1) {
+                  var settings = response.settings || Drupal.ajax.settings || Drupal.settings;
+                  Drupal.attachBehaviors($(response[i].selector), settings);
+                }
+              }
+            }
+          }
+        }
         
         var $ids = {};
         $('.availability:not(.processed)', context).addClass('processed').each(function() {
@@ -27,7 +40,7 @@
         
         var base = $('.availability.processed:first');
         Drupal.ajax[base.attr('id')] = new Drupal.ajax(base.attr('id'), base, element_settings);
-        base.click();
+        base.trigger('click');
       }
       /*return;
       var ids = [];

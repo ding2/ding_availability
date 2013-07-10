@@ -67,13 +67,32 @@ function ding_availability_holdings_js($provider_ids = NULL) {
   if(is_array($availability)) {
     // Set availability
     foreach($availability as $html_id => $avid) {
-      $return = theme('ding_availability_status', array('availability' => $data[$avid]));
-      $commands[] = ajax_command_replace('#' . $html_id, $return);
+      if(isset($data[$avid])) {
+        $return = theme('ding_availability_status', array('availability' => $data[$avid]));
+        $commands[] = ajax_command_replace('#' . $html_id, $return);
+      } else {
+        $default_data = array(
+          'local_id' => $avid,
+          'available' => 0,
+          'reservable' => 0,
+          'show_reservation_button' => 0,
+          'reserved_count' => 0,
+          'deferred_period' => FALSE,
+  	      'is_periodical' => 0,
+          'is_internet' => TRUE,
+          'status' => 'unavailable',
+        );
+        $return = theme('ding_availability_status', array('availability' => $default_data));
+        $commands[] = ajax_command_replace('#' . $html_id, $return);
+      }
     }
   }
   if(is_array($holdings)) {
     // Set holdings
     foreach($holdings as $html_id => $avid) {
+      if(empty($data[$avid]) || !isset($data[$avid])) {
+        $data[$avid]['location']['holdings'][][] = t('Not provided');
+      }
       $return = theme('ding_availability_holdings', array('holdings' => $data[$avid]));
       $commands[] = ajax_command_html('#' . $html_id, $return);
     }
@@ -133,7 +152,10 @@ function ding_availability_holdings($provider_ids) {
  * Adds the human readable status text of an item.
  */
 function _ding_availability_text(&$item) {
-  if (($item['available'] && $item['reservable']) || $item['is_internet']) {
+  if (isset($item['status']) && $item['status'] == 'inAcquisition') {
+    $item['status'] = t('in acquisition');
+  }
+  elseif (($item['available'] && $item['reservable']) || $item['is_internet']) {
     $item['status'] = t('available');
   }
   elseif (!$item['available'] && $item['reservable']) {

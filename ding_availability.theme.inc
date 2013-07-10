@@ -43,6 +43,15 @@ function template_preprocess_ding_availability_holdings(&$variables) {
         'class' => array('collapsible', 'collapsed'),
       ),
     );
+    $row = array();
+    $row['data']['Library'] = t('Reservations');
+    $row['data']['Copies'] = $variables['holdings']['reserved_count'];
+    $row['data']['Home'] = '';
+    $row['data']['Reference'] = '';
+    $row['data']['Checked_out'] = '';
+    $row['class'] = array(drupal_html_class('availability_holdings_last_row'));
+    $holdings['holdings']['rows'][] = $row;
+    
     $variables['content']['holdings']['table'] = array(
       '#theme' => 'table',
       '#attributes' => $holdings['holdings']['attributes'],
@@ -50,6 +59,8 @@ function template_preprocess_ding_availability_holdings(&$variables) {
       '#rows' => $holdings['holdings']['rows'],
     );
   }
+  $variables['classes'] = '';
+  $variables['classes_array'] = array();
   $variables['classes_array'][] = 'ding_availability_holdings';
 }
 
@@ -65,17 +76,19 @@ function theme_ding_availability_holdings(&$variables) {
  */
 function template_preprocess_ding_availability_status(&$variables) {
   $availability = $variables['availability'];
-  /*$variables['content']['availabitity'] = array(
-    '#theme' => 'item_list',
-    '#items' => array(
-      0 => array('data' => ucfirst($availability['status']), 'title' => $availability['status']),
-    ),
-    '#type' => 'ul',
-    '#attributes' => array(
-      'class' => array(drupal_html_class('ding_availability_status')),
-    ),
-  );*/
   $variables['attributes']['title'] = $availability['status'];
+  if($availability['available']) {
+    $variables['attributes']['class'][] = 'available';
+  }
+  if($availability['reservable']) {
+    $variables['attributes']['class'][] = 'reservable';
+  }
+  if($availability['is_internet']) {
+    $variables['attributes']['class'][] = drupal_html_class('is_internet');
+  }
+  if($availability['is_periodical']) {
+    $variables['attributes']['class'][] = drupal_html_class('is_periodical');
+  }
   $variables['data'] = t(ucfirst($availability['status']));
   $variables['classes_array'][] = 'ding_availability_status';
 }
