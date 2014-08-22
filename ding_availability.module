@@ -236,7 +236,7 @@ function ding_availability_holdings($provider_ids) {
 function ding_availability_holding_format_time($date) {
   $days = ceil(($date - time()) / 86400);
 
-  $plurals = array('day' => 'days', 'week' => 'weeks', 'month' => 'months');
+  $plurals = array('day' => t('days'), 'week' => t('weeks'), 'month' => t('months'));
   if ($days > 35) {
     $days = ceil($days / 30);
     $label = 'month';
