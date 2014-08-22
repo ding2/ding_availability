@@ -186,6 +186,7 @@ function ding_availability_holdings($provider_ids) {
       $rows = array();
       $copies = 0;
       $closest_loan = NULL;
+      $in_acquisition = 0;
       foreach ($item['holdings'] as $holding) {
         // This item is considered to be waited for.
         // Next, the number of holdings is compared to reserved ones.
@@ -197,6 +198,11 @@ function ding_availability_holdings($provider_ids) {
             $closest_loan = $next_loan_time;
           }
         }
+
+        if ($holding['status'] == 'inAcquisition') {
+          $in_acquisition++;
+        }
+
         $rows[] = ding_availability_holdings_row($holding);
       }
 
@@ -211,6 +217,7 @@ function ding_availability_holdings($provider_ids) {
         'total_count' => $item['total_count'],
         'reserved_count' => $item['reserved_count'],
         'closest_loan' => (count($item['holdings']) == $copies) ? ding_availability_holding_format_time($closest_loan) : NULL,
+        'in_acquisition' => $in_acquisition,
       ));
     }
   }
