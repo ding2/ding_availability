@@ -19,7 +19,7 @@ if ($in_acquisition > 0) {
 
 ?>
 <p>
-  <span><?php print "$total_text. $reserved_text."; ?></span>
+  <span><?php print $total_text . "<span class='in-queue'>" . $reserved_text . "</span>"; ?></span>
 </p>
 <p>
   <?php print $closest_loan; ?>
