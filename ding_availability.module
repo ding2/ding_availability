@@ -184,7 +184,19 @@ function ding_availability_holdings($provider_ids) {
       );
 
       $rows = array();
+      $copies = 0;
+      $closest_loan = NULL;
       foreach ($item['holdings'] as $holding) {
+        // This item is considered to be waited for.
+        // Next, the number of holdings is compared to reserved ones.
+        // Also keep the next loan date.
+        if (empty($item['available']) && !empty($holding['available_from'])) {
+          $next_loan_time = strtotime($holding['available_from']);
+          $copies++;
+          if (empty($closest_loan) || $closest_loan < $next_loan_time) {
+            $closest_loan = $next_loan_time;
+          }
+        }
         $rows[] = ding_availability_holdings_row($holding);
       }
 
@@ -198,11 +210,45 @@ function ding_availability_holdings($provider_ids) {
         ),
         'total_count' => $item['total_count'],
         'reserved_count' => $item['reserved_count'],
+        'closest_loan' => (count($item['holdings']) == $copies) ? ding_availability_holding_format_time($closest_loan) : NULL,
       ));
     }
   }
 
   return $items;
+}
+
+/**
+ * Generate a human-readable amount of wait time.
+ *
+ * @param int $date
+ *   Loan date timestamp.
+ * @return string
+ *   Sane display of time to wait (months/weeks/days).
+ */
+function ding_availability_holding_format_time($date) {
+  $days = ceil(($date - time()) / 86400);
+
+  $plurals = array('day' => 'days', 'week' => 'weeks', 'month' => 'months');
+  if ($days > 35) {
+    $days = ceil($days / 30);
+    $label = 'month';
+  }
+  elseif ($days > 6) {
+    $days = ceil($days / 7);
+    $label = 'week';
+  }
+  else {
+    $label = 'day';
+  }
+
+  if ($days > 1) {
+    $label = $plurals[$label];
+  }
+
+  $text = t('The waiting time is currently: <strong>@days @label</strong>', array('@days' => $days, '@label' => $label));
+
+  return $text;
 }
 
 /**
