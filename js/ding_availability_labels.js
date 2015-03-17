@@ -91,7 +91,7 @@
 
         // Get hold of the reserve button (it hidden as default, so we may need
         // to show it).
-        var reserver_btn = element.parents('.ting-object:first').find('[id^=ding-reservation-reserve-form]');
+        var reserver_btn = element.parents('.ting-object:first').find('.reserve-button');
 
         if (available) {
           update_availability_elements(element, reserver_btn, 'available');
