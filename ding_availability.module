@@ -152,6 +152,7 @@ function ding_availability_items($provider_ids) {
  */
 function ding_availability_holdings($provider_ids) {
   $items = ding_provider_invoke('availability', 'holdings', $provider_ids);
+  $items = array_filter($items, function($v) { return $v['availability_information']; });
   if (!$items) {
     return array();
   }
